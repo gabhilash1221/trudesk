@@ -82,7 +82,7 @@ var ticketSchema = mongoose.Schema({
   deleted: { type: Boolean, default: false, required: true, index: true },
   type: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: false,
     ref: 'tickettypes'
   },
   status: { type: Number, default: 0, required: true, index: true },
@@ -90,10 +90,14 @@ var ticketSchema = mongoose.Schema({
   priority: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'priorities',
-    required: true
+    required: false
   },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
-  subject: { type: String, required: true },
+  subject: { type: String},
+  chapterId: { type: String }, /* extra fields are added to save the required fields to add in to the database */
+  sectionInfo: { type: String }, /* extra fields are added to save the required fields to add in to the database */
+  selectedText: { type: String }, /* extra fields are added to save the required fields to add in to the database */
+  selectedTextPageNumber: { type: Number }, /* extra fields are added to save the required fields to add in to the database */
   issue: { type: String, required: true },
   closedDate: { type: Date },
   dueDate: { type: Date },
@@ -103,12 +107,18 @@ var ticketSchema = mongoose.Schema({
   history: [historySchema],
   subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
+  //nodeId: { type: String }, /* extra fields are added to save the required fields to add in to the database */
+  //this.nodeId = this.nodeId /* extra fields are added to save the required fields to add in to the database */
 
 ticketSchema.index({ deleted: -1, group: 1, status: 1 })
 
 ticketSchema.pre('save', function (next) {
   this.subject = this.subject.trim()
   this.wasNew = this.isNew
+  this.chapterId = this.chapterId /* extra fields are added to save the required fields to add in to the database */
+  this.selectedText = this.selectedText /* extra fields are added to save the required fields to add in to the database */
+  this.sectionInfo = this.sectionInfo /* extra fields are added to save the required fields to add in to the database */
+  this.selectedTextPageNumber = this.selectedTextPageNumber /* extra fields are added to save the required fields to add in to the database */
 
   if (!_.isUndefined(this.uid) || this.uid) {
     return next()
@@ -420,6 +430,82 @@ ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
 
   return callback(null, self)
 }
+/* extra fields are added to save the required fields to add in to the database */
+/*ticketSchema.methods.setNodeId = function (ownerId, nodeId, callback) {
+  var self = this
+  self.nodeId = nodeId
+  var historyItem = {
+    action: 'ticket:update:nodeId',
+    description: 'Ticket nodeId was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}*/
+
+ticketSchema.methods.setChapterId = function (ownerId, chapterId, callback) {
+  var self = this
+  self.chapterId = chapterId
+  var historyItem = {
+    action: 'ticket:update:chapterId',
+    description: 'Ticket chapterId was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}
+
+ticketSchema.methods.setSectionInfo = function (ownerId, sectionInfo, callback) {
+  var self = this
+  self.sectionInfo = sectionInfo
+  var historyItem = {
+    action: 'ticket:update:sectionInfo',
+    description: 'Ticket sectionInfo was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}
+
+ticketSchema.methods.setSelectedText = function (ownerId, selectedText, callback) {
+  var self = this
+  self.selectedText = selectedText
+  var historyItem = {
+    action: 'ticket:update:selectedText',
+    description: 'Ticket selectedText was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}
+
+ticketSchema.methods.setSelectedTextPageNumber = function (ownerId, selectedTextPageNumber, callback) {
+  var self = this
+  self.selectedTextPageNumber = selectedTextPageNumber
+  var historyItem = {
+    action: 'ticket:update:selectedTextPageNumber',
+    description: 'Ticket selectedTextPageNumber was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}
+
+
+
+
+/* extra fields are added to save the required fields to add in to the database */
+
 
 /**
  * Updates a given comment inside the comment array on this ticket
@@ -848,6 +934,32 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
       q.or([{ subject: new RegExp(object.filter.subject, 'i') }])
     }
 
+    /* extra fields are added to save the required fields to add in to the database */
+
+    if (!_.isUndefined(object.filter.chapterId)) {
+      q.or([{ chapterId: new RegExp(object.filter.chapterId, 'i') }])
+    }
+
+    /*if (!_.isUndefined(object.filter.nodeId)) {
+      q.or([{ nodeId: new RegExp(object.filter.nodeId, 'i') }])
+    }*/
+
+    if (!_.isUndefined(object.filter.sectionInfo)) {
+      q.or([{ sectionInfo: new RegExp(object.filter.sectionInfo, 'i') }])
+    }
+
+    if (!_.isUndefined(object.filter.selectedText)) {
+      q.or([{ selectedText: new RegExp(object.filter.selectedText, 'i') }])
+    }
+
+    if (!_.isUndefined(object.filter.selectedTextPageNumber)) {
+      q.or([{ selectedTextPageNumber: new RegExp(object.filter.selectedTextPageNumber, 'i') }])
+    }
+
+    
+
+    /* extra fields are added to save the required fields to add in to the database */
+    
     if (!_.isUndefined(object.filter.issue)) {
       q.or([{ issue: new RegExp(object.filter.issue, 'i') }])
     }
@@ -908,6 +1020,26 @@ ticketSchema.statics.getCountWithObject = function (grpId, object, callback) {
 
   if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject))
     q.where({ subject: new RegExp(object.filter.subject, 'i') })
+
+/* extra fields are added just to save the required fields to add in to the database */
+  /*if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.nodeId))
+    q.where({ nodeId: new RegExp(object.filter.nodeId, 'i') })*/
+
+  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.chapterId))
+    q.where({ chapterId: new RegExp(object.filter.chapterId, 'i') })
+
+  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.sectionInfo))
+    q.where({ sectionInfo: new RegExp(object.filter.sectionInfo, 'i') })
+
+  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.selectedText))
+    q.where({ selectedText: new RegExp(object.filter.selectedText, 'i') })
+
+  if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.selectedTextPageNumber))
+    q.where({ selectedTextPageNumber: new RegExp(object.filter.selectedTextPageNumber, 'i') })
+
+  
+
+/* extra fields are added to save the required fields to add in to the database */
 
   if (
     !_.isUndefined(object.assignedSelf) &&
@@ -1242,7 +1374,7 @@ ticketSchema.statics.getOverdue = function (grpId, callback) {
         return self
           .model(COLLECTION)
           .find({ _id: { $in: ids } })
-          .limit(50)
+          .limit(2)
           .select('_id uid subject updated date')
           .lean()
           .exec(next)
