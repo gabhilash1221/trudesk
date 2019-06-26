@@ -86,7 +86,7 @@ ticketsController.getByStatus = function (req, res, next) {
   processor.renderpage = 'tickets'
   processor.pagetype = 'active'
   processor.object = {
-    limit: 50,
+    limit: 2,
     page: page,
     status: []
   }
@@ -141,7 +141,7 @@ ticketsController.getActive = function (req, res, next) {
   processor.renderpage = 'tickets'
   processor.pagetype = 'active'
   processor.object = {
-    limit: 50,
+    limit: 2,
     page: page,
     status: [0, 1, 2]
   }
@@ -170,7 +170,7 @@ ticketsController.getAssigned = function (req, res, next) {
   processor.renderpage = 'tickets'
   processor.pagetype = 'assigned'
   processor.object = {
-    limit: 50,
+    limit: 2,
     page: page,
     status: [0, 1, 2],
     assignedSelf: true,
@@ -201,7 +201,7 @@ ticketsController.getUnassigned = function (req, res, next) {
   processor.renderpage = 'tickets'
   processor.pagetype = 'unassigned'
   processor.object = {
-    limit: 50,
+    limit: 2,
     page: page,
     status: [0, 1, 2],
     unassigned: true,
@@ -216,10 +216,16 @@ ticketsController.getUnassigned = function (req, res, next) {
 ticketsController.filter = function (req, res, next) {
   var page = req.query.page
   if (_.isUndefined(page)) page = 0
-
   var queryString = req.query
   var uid = queryString.uid
+
+
+
   var subject = queryString.fs
+  var chapterId = queryString.chapterid
+  var sectionInfo = queryString.secinfo
+  var selectedText = queryString.seltext
+  var selectedTextPageNumber = queryString.seltextpagenum
   var issue = queryString.it
   var dateStart = queryString.ds
   var dateEnd = queryString.de
@@ -244,6 +250,11 @@ ticketsController.filter = function (req, res, next) {
   var filter = {
     uid: uid,
     subject: subject,
+    chapterId: chapterId,
+    sectionInfo: sectionInfo,
+    selectedText: selectedText,
+    selectedTextPageNumber: selectedTextPageNumber,
+    nodeId: nodeId,
     issue: issue,
     date: {
       start: dateStart,
@@ -265,7 +276,7 @@ ticketsController.filter = function (req, res, next) {
   processor.pagetype = 'filter'
   processor.filter = filter
   processor.object = {
-    limit: 50,
+    limit: 2,
     page: page,
     status: filter.status,
     user: req.user._id,
