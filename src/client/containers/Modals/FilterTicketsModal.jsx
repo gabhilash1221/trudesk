@@ -41,6 +41,10 @@ class FilterTicketsModal extends React.Component {
     const startDate = e.target.filterDate_Start.value
     const endDate = e.target.filterDate_End.value
     const subject = e.target.subject.value
+    const chapterId = e.target.chapterId.value
+    const sectionInfo = e.target.sectionInfo.value
+    const selectedText = e.target.selectedText.value
+    const selectedTextPageNumber = e.target.selectedTextPageNumber.value
     const statuses = this.statusSelect.value
     const tags = this.tagsSelect.value
     const types = this.typesSelect.value
@@ -50,6 +54,10 @@ class FilterTicketsModal extends React.Component {
     if (endDate) queryString += `&de=${endDate}`
 
     if (subject) queryString += `&fs=${subject}`
+    if (chapterId) queryString += `&chapterid=${chapterId}`
+    if (selectedText) queryString += `&seltext=${selectedText}`
+    if (selectedTextPageNumber) queryString += `&seltextpagenum=${selectedTextPageNumber}`
+    if (sectionInfo) queryString += `&secinfo=${sectionInfo}`
 
     each(statuses, i => {
       queryString += `&st=${i}`
@@ -90,6 +98,22 @@ class FilterTicketsModal extends React.Component {
           <div className='uk-margin-medium-bottom'>
             <label>Subject</label>
             <input type='text' name={'subject'} className={'md-input'} />
+          </div>
+          <div className='uk-margin-medium-bottom'>
+            <label>Chapter ID</label>
+            <input type='text' name={'chapterId'} className={'md-input'} />
+          </div>
+          <div className='uk-margin-medium-bottom'>
+            <label>Section Info</label>
+            <input type='text' name={'sectionInfo'} className={'md-input'} />
+          </div>
+          <div className='uk-margin-medium-bottom'>
+            <label>Selected Text</label>
+            <input type='text' name={'selectedText'} className={'md-input'} />
+          </div>
+          <div className='uk-margin-medium-bottom'>
+            <label>Selected Text Page Number</label>
+            <input type='text' name={'selectedTextPageNumber'} className={'md-input'} />
           </div>
           <div className='uk-grid uk-grid-collapse uk-margin-small-bottom'>
             <div className='uk-width-1-2' style={{ padding: '0 15px 0 0' }}>
